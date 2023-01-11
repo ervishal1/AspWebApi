@@ -24,14 +24,16 @@ namespace AspWebApi.Repositories
             return Result.Entity;
         }
 
-        public async void DeleteEmployee(int Id)
+        public async Task<Employee> DeleteEmployee(int Id)
         {
             var Result = await _context.Employees.Where(x => x.Id == Id).FirstOrDefaultAsync();
             if(Result != null)
             {
                 _context.Employees.Remove(Result);
                 await _context.SaveChangesAsync();
+                return Result;
             }
+            return null;
         }
 
         public async Task<Employee> GetEmployee(int Id)
