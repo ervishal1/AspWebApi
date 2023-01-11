@@ -1,4 +1,5 @@
 ﻿using AspWebApi.Repositories;
+using DataAccessLayer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -32,12 +33,39 @@ namespace AspWebApi
 
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetEmployee(int id)
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<Employee>> GetEmployee(int id)
         {
-            try {
-                return Ok(await _employeeRepo.GetEmployee(id));
-            } catch (Exception) {
+            try
+            {
+                var res = await _employeeRepo.GetEmployee(id);
+                if(res == null)
+                {
+                    return NotFound();
+                }
+                return res;
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error in Retriving Data From DataBase");
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<Employee>> CreateEmployee(Employee emp)
+        {
+            try
+            {
+                if(emp == null)
+                {
+                    return BadRequest();
+                }
+
+                var CreatedEmp = await _employeeRepo.AddEmployee(emp);
+                return CreatedAtAction(nameof(GetEmployees), new { id = CreatedEmp.Id }, CreatedEmp);
+            }
+            catch (Exception)
+            {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error in Retriving Data From DataBase");
             }
         }
