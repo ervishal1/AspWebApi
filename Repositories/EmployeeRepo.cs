@@ -24,14 +24,16 @@ namespace AspWebApi.Repositories
             return Result.Entity;
         }
 
-        public async void DeleteEmployee(int Id)
+        public async Task<Employee> DeleteEmployee(int Id)
         {
             var Result = await _context.Employees.Where(x => x.Id == Id).FirstOrDefaultAsync();
             if(Result != null)
             {
                 _context.Employees.Remove(Result);
                 await _context.SaveChangesAsync();
+                return Result;
             }
+            return null;
         }
 
         public async Task<Employee> GetEmployee(int Id)
@@ -42,6 +44,16 @@ namespace AspWebApi.Repositories
         public async Task<IEnumerable<Employee>> GetEmployees()
         {
             return await _context.Employees.ToListAsync();
+        }
+
+        public async Task<IEnumerable<Employee>> Search(string name)
+        {
+            IQueryable<Employee> query = _context.Employees;
+            if (!string.IsNullOrEmpty(name))
+            {
+                query = query.Where(x => x.Name.Contains(name));
+            }
+            return await query.ToListAsync();
         }
 
         public async Task<Employee> UpdateEmployee(Employee employee)

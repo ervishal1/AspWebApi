@@ -11,7 +11,7 @@ namespace AspWebApi
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EmployeesController : ControllerBase 
+    public class EmployeesController : ControllerBase
     {
         private readonly IEmployeeRepo _employeeRepo;
 
@@ -19,16 +19,17 @@ namespace AspWebApi
         {
             _employeeRepo = employeeRepo;
         }
-       
+
         [HttpGet]
         public async Task<IActionResult> GetEmployees()
         {
-            try {
+            try
+            {
                 return Ok(await _employeeRepo.GetEmployees());
             }
-            catch(Exception)
+            catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError,"Error in Retriving Data From DataBase");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error in Retriving Data From DataBase");
             }
 
         }
@@ -39,7 +40,7 @@ namespace AspWebApi
             try
             {
                 var res = await _employeeRepo.GetEmployee(id);
-                if(res == null)
+                if (res == null)
                 {
                     return NotFound();
                 }
@@ -56,13 +57,79 @@ namespace AspWebApi
         {
             try
             {
-                if(emp == null)
+                if (emp == null)
                 {
                     return BadRequest();
                 }
 
                 var CreatedEmp = await _employeeRepo.AddEmployee(emp);
                 return CreatedAtAction(nameof(GetEmployees), new { id = CreatedEmp.Id }, CreatedEmp);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error in Retriving Data From DataBase");
+            }
+        }
+
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult<Employee>> UpdateEmployee(int id, Employee emp)
+        {
+            try
+            {
+                if (id != emp.Id)
+                {
+                    return BadRequest("ID Mismatch !!!");
+                }
+
+                var empUpdate = await _employeeRepo.GetEmployee(id);
+
+                if (empUpdate == null)
+                {
+                    return NotFound($"Employee Id={id} not found !");
+                }
+
+
+                return await _employeeRepo.UpdateEmployee(emp);
+
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error in Retriving Data From DataBase");
+            }
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult<Employee>> DeleteEmployee(int id)
+        {
+            try
+            {
+                var empDelete = await _employeeRepo.GetEmployee(id);
+
+                if (empDelete == null)
+                {
+                    return NotFound($"Employee Id={id} not found !");
+                }
+
+
+                return await _employeeRepo.DeleteEmployee(id);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error in Retriving Data From DataBase");
+            }
+        }
+
+        [HttpGet("{search}")]
+        public async Task<ActionResult<IEnumerable<Employee>>> Search(string name)
+        {
+            try
+            {
+                var result = await _employeeRepo.Search(name);
+                if (result.Any())
+                {
+                    return Ok(result);
+                }
+                return NotFound();
             }
             catch (Exception)
             {
