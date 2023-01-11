@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AspWebApi.Repositories
 {
-    public interface IEmplyoeeRepo
+    public interface IEmployeeRepo
     {
         Task<IEnumerable<Employee>> GetEmployees();
         Task<Employee> GetEmployee(int Id);
