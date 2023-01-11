@@ -46,6 +46,16 @@ namespace AspWebApi.Repositories
             return await _context.Employees.ToListAsync();
         }
 
+        public async Task<IEnumerable<Employee>> Search(string name)
+        {
+            IQueryable<Employee> query = _context.Employees;
+            if (!string.IsNullOrEmpty(name))
+            {
+                query = query.Where(x => x.Name.Contains(name));
+            }
+            return await query.ToListAsync();
+        }
+
         public async Task<Employee> UpdateEmployee(Employee employee)
         {
             var Result = await _context.Employees.FirstOrDefaultAsync(x => x.Id == employee.Id);

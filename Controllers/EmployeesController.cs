@@ -117,7 +117,24 @@ namespace AspWebApi
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error in Retriving Data From DataBase");
             }
-            return Ok("Record Deleted");
+        }
+
+        [HttpGet("{search}")]
+        public async Task<ActionResult<IEnumerable<Employee>>> Search(string name)
+        {
+            try
+            {
+                var result = await _employeeRepo.Search(name);
+                if (result.Any())
+                {
+                    return Ok(result);
+                }
+                return NotFound();
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error in Retriving Data From DataBase");
+            }
         }
     }
 }
