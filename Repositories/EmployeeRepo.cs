@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace AspWebApi.Repositories
 {
-    public class EmplyoeeRepo : IEmplyoeeRepo
+    public class EmployeeRepo : IEmployeeRepo
     {
         private readonly ApplicationDbContext _context;
 
-        public EmplyoeeRepo(ApplicationDbContext context)
+        public EmployeeRepo(ApplicationDbContext context)
         {
             _context = context;
         }
